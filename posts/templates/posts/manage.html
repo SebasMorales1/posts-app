@@ -1,0 +1,183 @@
+{% extends "./base.html" %}
+
+{% block head %}
+  <title>Manage Posts</title>
+  <style>
+    h1 {
+      margin-bottom: 1.4em;
+    }
+
+    .forms {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 30px;
+    }
+
+    .forms form {
+      border: 2px solid gray;
+      padding: 20px 10px;
+      height: fit-content;
+    }
+
+    .forms form h2 {
+      text-align: center;
+      margin-bottom: 1em;
+    }
+
+    .form__inputs {
+      margin-bottom: 0.8em;
+      margin-top: 0.4em;
+    }
+
+    .input {
+      width: 100%;
+      padding: 8px;
+      resize: none;
+    }
+
+    .btn {
+      padding: 0.5em 1em;
+      border: none;
+      background-color: rgb(40, 206, 40);
+      cursor: pointer;
+      color: white;
+      font-weight: 600;
+      width: 100%;
+      font-size: 0.9em;
+    }
+
+    .btn:hover {
+      background-color: rgb(34, 180, 34);
+    }
+
+    .form__inputs-consult {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 2.2em;
+    }
+
+    .form__inputs-consult .input {
+      width: 90%;
+    }
+
+    .btn-consult {
+      width: fit-content;
+      background-color: rgb(64, 64, 236);
+    }
+
+    .btn-consult:hover {
+      background-color: rgb(52, 52, 196);
+    }
+
+    .form__btns {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .form__btns .btn {
+      background-color: rgb(243, 61, 61);
+    }
+
+    .form__btns .btn:hover {
+      background-color: rgb(194, 51, 51);
+    }
+
+    .form__btns .btn:nth-child(1) {
+      background-color: rgb(41, 142, 189);
+    }
+
+    .form__btns .btn:nth-child(1):hover {
+      background-color: rgb(33, 114, 151);
+    }
+
+    .form__btns .btn-cancel {
+      background-color: gray;
+      text-decoration: none;
+      text-align: center;
+    }
+
+    .form__btns .btn-cancel:hover {
+      background-color: rgb(97, 97, 97);
+    }
+
+    .success {
+      padding: 10px;
+      background-color: rgb(45, 133, 133);
+      color: white;
+      margin-bottom: 1em;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  <h1>Manage Posts</h1>
+
+  {% if messages %}
+    {%for message in messages %}
+      {% if 'success' in message.tags %}
+        <p class="success">{{ message }}</p>
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+
+  <div class="forms">
+    <form method="post" action="{% url 'posts:manage' %}">
+      {% csrf_token %}
+      <h2>Create a new post</h2>
+      <label for="title">Title</label>
+      <div class="form__inputs">
+        <input class="input" id="title" type="text" name="title" placeholder="Write Title Post">
+      </div>
+
+      <label for="description">Description</label>
+      <div class="form__inputs">
+        <textarea name="description" class="input" id="description" cols="30" rows="10" placeholder="(Optional) Write Description Post"></textarea>
+      </div>
+
+      <button class="btn" type="submit" name="type" value="post">
+        Create
+      </button>
+    </form>
+
+    <form 
+      {% if post %}
+        method="post"
+      {% else %}
+        method="get"
+      {% endif %}
+    >
+      <h2>Edit or Delete a post</h2>
+      {% if post %}
+        {% csrf_token %}
+        <label for="title">New Title</label>
+        <div class="form__inputs">
+          <input class="input" id="title" type="text" name="title" placeholder="Write New Title Post" value="{{ post.title }}">
+        </div>
+        <label for="description">New Description</label>
+        <div class="form__inputs">
+          <textarea name="description" class="input" id="description" cols="30" rows="10" placeholder="(Optional) Write New Description Post">{{ post.description }}</textarea>
+        </div>
+        <div class="form__btns">
+          <button type="submit" class="btn" name="type" value="put">
+            Edit
+          </button>
+          <button type="submit" class="btn" name="type" value="delete">
+            Delete
+          </button>
+          <a href="{% url 'posts:manage' %}" class="btn btn-cancel">
+            Cancel
+          </a>
+        </div>
+      {% else %}
+        <label for="consult">Consult</label>
+        <div class="form__inputs form__inputs-consult">
+          <input class="input" id="consult" type="text" name="id" placeholder="Write ID Post" required>
+          <button type="submit" class="btn btn-consult">
+            Consult
+          </button>
+        </div>
+      {% endif %}
+    </form>
+  </div>
+{% endblock %}

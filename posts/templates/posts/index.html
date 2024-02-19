@@ -1,0 +1,70 @@
+{% extends "./base.html" %}
+
+{% block head %}
+  <title>Posts App</title>
+  <style>
+    h1 {
+      margin-bottom: 1.5em;
+    }
+
+    .posts {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .post {
+      list-style: none;
+    }
+
+    .post__items {
+      text-decoration: none;
+      color: black;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 2px solid gray;
+      padding: 10px;
+      height: 60px;
+
+      .post__info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+    }
+
+    .post__items:hover {
+      border-color: orange;
+
+      h3 {
+        color: orange;
+        text-decoration: underline;
+      }
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  <h1>Posts</h1>
+
+  {% if posts %}
+    <ul class="posts">
+      {% for post in posts %}
+        <li class="post">
+          <a href="{% url 'posts:detail' post.id %}" class="post__items">
+            <h3>{{ post.title }}</h3>
+            <div class="post__info">
+              <time datetime="{{ post.created_at }}">
+                Created at: {{ post.created_at }}
+              </time>
+              <b>ID: {{ post.id }}</b>
+            </div>
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>there are no posts.</p>
+  {% endif %}
+{% endblock %}

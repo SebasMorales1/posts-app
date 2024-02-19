@@ -1,0 +1,138 @@
+{% extends "./base.html" %}
+
+{% block head %}
+  <title>Post #{{ post.id }}</title>
+  <style>
+    h1 {
+      margin-bottom: 0.5em;
+    }
+
+    .section__footer {
+      display: flex;
+      gap: 1em;
+      color: rgb(48, 48, 48);
+      margin-top: 20px;
+    }
+
+    .items {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      margin-bottom: 2em;
+    }
+
+    .form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .form h2 {
+      text-align: center;
+      color: rgb(92, 92, 92);
+    }
+
+    #comment {
+      resize: none;
+      padding: 4px;
+    }
+
+    .success {
+      color: green;
+      margin-bottom: 1em;
+    }
+
+    .comments__section {
+      margin-top: 2.5em;
+    }
+
+    .comments {
+      display: flex;
+      flex-direction: column;
+      gap: 1em;
+    }
+
+    .comment {
+      border: 2px solid gray;
+      list-style: none;
+      padding: 10px 5px;
+
+      time {
+        display: block;
+        color: rgb(94, 94, 94);
+        margin-bottom: 1em;
+      }
+    }
+
+    .comment_text {
+      color: rgb(27, 27, 27);
+      max-width: 90%;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  <h1>{{ post.title }}</h1>
+
+  <div class="items">
+    <section>
+      {% for text in description_formarted %}
+        {% if text != "*&space*" %}
+          <p>{{ text }}</p>
+        {% else %}
+          <br>
+        {% endif %}
+      {% endfor %}
+  
+      <footer class="section__footer">
+        <p>Created At: {{ post.created_at }}</p>
+        {% if post.created_at == post.updated_at %}
+          <p>{{ post.updated_at }}</p>
+        {% endif %}
+      </footer>
+    </section>
+
+    <form action="" method="post" class="form">
+      <h2>Add comment</h2>
+
+      {% csrf_token %}
+      <div>
+        <textarea name="comment" id="comment" cols="30" rows="12" placeholder="Write a comment to this post." required></textarea>
+      </div>
+      <button>Add Comment</button>
+    </form>
+  </div>
+
+  {% if messages %}
+    {% for message in messages %}
+      {% if "success" in message.tags %}
+        <p class="success">{{ message }}</p>
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+
+  <a href="{% url 'posts:detail' post.id %}?comments=show">Show Comments</a>
+
+  <section class="comments__section">
+    {% if "comments" in request.GET and request.GET.comments == "show" %}
+      {% if comments %}
+        <ul class="comments">
+          {% for comment in comments %}
+            <li class="comment">
+              <time datetime="{{ comment.published }}">Published: {{ comment.published }}</time>
+              {% for text in comment.text %}
+                {% if text != "*&space*" %}
+                  <p class="comment_text">{{ text }}</p>
+                {% else %}
+                  <br>
+                {% endif %}
+              {% endfor %}
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>This post hasn't comments</p>
+      {% endif %}
+    {% endif %}
+  </section>
+{% endblock %}
